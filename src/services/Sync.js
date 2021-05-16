@@ -18,13 +18,13 @@ class SyncDocClass {
 	
 	// This is where we update the Sync Document we pass in the syncDocName we are updating, and adding the agent
 	// to the assistance array
-	updateSyncDoc(syncDocName, agentWorkerSID) {
+	updateSyncDoc(syncDocName, agentObject) {
 		SYNC_CLIENT
 			.document(syncDocName)
 			.then(doc => {
 				doc.update({
 					data: { 
-						assistance: agentWorkerSID
+						assistance: agentObject
 					}
 				});
 				return new Promise(function (resolve) {

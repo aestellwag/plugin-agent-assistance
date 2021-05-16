@@ -40,7 +40,7 @@ class AgentAssistanceButton extends React.Component {
   // Initial sync doc listener, will use this when calling the agentAssistanceClick
   // Pull values from props as we need to confirm we are updating the agent's sync doc
   // and adding the conference, supervisor, and coaching status
-  initSyncDoc(agentWorkerSID, updateStatus) {
+  initSyncDoc(agentWorkerSID, agentFN, conferenceSID, updateStatus) {
 
     // Getting the latest Sync Doc agent list and storing in an array
     // We will use this to add/remove the approprate agents and then update the Sync Doc
@@ -54,9 +54,16 @@ class AgentAssistanceButton extends React.Component {
         console.log(`Agent Array Spread: ${agentArray}`);
         // Checking Updated Status we pass during the agentAssistanceClick
         // to push/add the Agent to the Agent Array within the Sync Doc
+        // adding their Full Name and Conference - the Supervisor will leverage these values
         if(updateStatus === 'add') {
           console.log(`Updating Sync Doc: Agent-Assistance, agent: ${agentWorkerSID} has been ADDED to the assistance array`);
-          agentArray.push(agentWorkerSID);
+          agentArray.push(
+            { 
+              "agent_SID": agentWorkerSID,
+              "agent_FullName": agentFN,
+              "conference": conferenceSID
+            }
+          );
           // Update the Sync Doc with the new agentArray
           SyncDoc.updateSyncDoc('Agent-Assistance', agentArray);
     
@@ -65,7 +72,7 @@ class AgentAssistanceButton extends React.Component {
         } else if (updateStatus === 'remove') {
           console.log(`Updating Sync Doc: Agent-Assistance, agent: ${agentWorkerSID} has been REMOVED from the assistance array`);
           // Get the index of the Agent we need to remove in the array
-          const removeAgentIndex = agentArray.indexOf(agentWorkerSID);
+          const removeAgentIndex = agentArray.findIndex((agent) => agent.agent_SID === agentWorkerSID);
           // Ensure we get something back, let's splice this index where the Agent is within the array
           if (removeAgentIndex > -1) {
             agentArray.splice(removeAgentIndex, 1);
@@ -81,8 +88,12 @@ class AgentAssistanceButton extends React.Component {
   // The Supervisor's will receive updates when an agent asking for help is added or removed to know who is actively
   // looking for assistance
   agentAssistanceClick = () => {
+    const { task } = this.props;
+    const conference = task && task.conference;
+    const conferenceSID = conference && conference.conferenceSid;
     const agentAssistance = this.props.agentAssistance;
-    console.log(`myWorkerSID = ${this.props.myWorkerSID}`);
+    const myWorkerSID = this.props.myWorkerSID;
+    const agentFN = this.props.agentFN;
 
     if (agentAssistance) {
       this.props.setAgentAssistanceStatus({ 
@@ -90,7 +101,7 @@ class AgentAssistanceButton extends React.Component {
       });
 
       // Updating the Sync Doc to remove the agent from the assistance array
-      this.initSyncDoc(this.props.myWorkerSID, 'remove');
+      this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'remove');
 
     } else {
       this.props.setAgentAssistanceStatus({ 
@@ -98,7 +109,7 @@ class AgentAssistanceButton extends React.Component {
       });
 
       // Updating the Sync Doc to add the agent from the assistance array
-      this.initSyncDoc(this.props.myWorkerSID, 'add');
+      this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'add');
     }
   }
 
@@ -128,6 +139,7 @@ class AgentAssistanceButton extends React.Component {
 // Getting the agent's SID so we can use it later
 const mapStateToProps = (state) => {
   const myWorkerSID = state?.flex?.worker?.worker?.sid;
+  const agentFN = state?.flex?.worker?.attributes?.full_name;
 
   // Also pulling back the states from the redux store as we will use those later
   // to manipulate the agent assistance button
@@ -145,7 +157,8 @@ const mapStateToProps = (state) => {
 
   return {
     myWorkerSID,
-    agentAssistance
+    agentAssistance,
+    agentFN
   };
 };
 

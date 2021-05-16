@@ -43,21 +43,23 @@ function tokenUpdateHandler() {
 //       from the array when they turn off agent assistance
 
 //TODO:  What's next to build?
-//       1 - Supervisor Side:
-//          1a - Enable Sync Doc Subscriptions
+//       1 - Add another array with agent's full name to the Sync Doc updates and conference SID
+//          (COMPLETED)
+//       2 - Supervisor Side:
+//          2a - Enable Sync Doc Subscriptions
 //                a - Look to add a role based filter to prevent all users from be able to subscrib (this will be useful when we get to alerts)
-//          1b - Push Alert that shows when Agent clicks the Agent Assistance button
+//          2b - Push Alert that shows when Agent clicks the Agent Assistance button
 //                a - (Extra Credit) See if you can have when clicking the alert that it brings you into the Teams View Tab
-//       2 - Update Sync Doc when Supervisor begins to Monitor (IE Turn off Agent Assistance)
-//          2a - Look to get it to update the Agent's State for the Agent Assistance Button
-//       3 - Add changes to Teams View Canvas based on WHO is actively asking for Agent Assistance (IE highlight red?)
-//       4 - UI Extras
-//          4a - Supervisor UI - See if you can have when clicking the alert that it brings you into the Teams View Tab
-//          4b - Agent UI - Look to alert Agent that X Supervisor is monitoring the call or maybe we just devert to the Barge/Coach plugin?
-//       5 - Clean Up Steps
-//          5a - Clean up if Agent Hands up the Call
-//          5b - Clean up if Agent refreshs the browser
-//          5c - What if the Supervisor Refreshes?  (Shouldn't matter but test for it)
+//       3 - Update Sync Doc when Supervisor begins to Monitor (IE Turn off Agent Assistance)
+//          3a - Look to get it to update the Agent's State for the Agent Assistance Button
+//       4 - Add changes to Teams View Canvas based on WHO is actively asking for Agent Assistance (IE highlight red?)
+//       5 - UI Extras
+//          5a - Supervisor UI - See if you can have when clicking the alert that it brings you into the Teams View Tab
+//          5b - Agent UI - Look to alert Agent that X Supervisor is monitoring the call or maybe we just devert to the Barge/Coach plugin?
+//       6 - Clean Up Steps
+//          6a - Clean up if Agent Hands up the Call
+//          6b - Clean up if Agent refreshs the browser
+//          6c - What if the Supervisor Refreshes?  (Shouldn't matter but test for it)
 
 
 export default class AgentAssistancePlugin extends FlexPlugin {
@@ -79,12 +81,15 @@ export default class AgentAssistancePlugin extends FlexPlugin {
     flex.CallCanvas.Content.add(
       <AgentAssistanceButton key="agent-assistance-button" />
     );
-    
-    //TODO: Adding this temporarily so I can track Doc Updates for testing
-    //      Need to add this so only supervisors subscribe to the doc updates
-    //      Look for a role based flag to enable this for only supervisors
+  
+
+    //TODO: REMOVE - TESTING ONLY - Here to clear the Sync Doc
     // console.log('Clearing Sync Doc');
     // SyncDoc.clearSyncDoc('Agent-Assistance');
+
+    //TODO: REMOVE - TESTING ONLY - Adding this temporarily so I can track Doc Updates for testing
+    //      Need to add this so only supervisors subscribe to the doc updates
+    //      Look for a role based flag to enable this for only supervisors
 
     let subscribedToDoc = false;
     if(!subscribedToDoc) {
