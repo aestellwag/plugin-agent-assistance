@@ -73,6 +73,8 @@ class SupervisorTeamsView extends React.Component {
       });
       // Fire off the Notification we just registered
       Notifications.showNotification(agentFN);
+      // Delete the alert as we just want it temp
+      Notifications.registeredNotifications.delete(agentFN);
     }
   }
 

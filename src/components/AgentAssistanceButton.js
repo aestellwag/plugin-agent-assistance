@@ -103,9 +103,6 @@ class AgentAssistanceButton extends React.Component {
       console.log('Storing agentAssistance to cache');
       localStorage.setItem('cacheAgentAssistState',false);
 
-      // Delete the alert if the agent toggles the Agent Assistance Mode off manually
-      Notifications.registeredNotifications.delete(agentFN);
-
       // Updating the Sync Doc to remove the agent from the assistance array
       this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'remove');
 

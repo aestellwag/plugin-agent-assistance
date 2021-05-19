@@ -67,14 +67,19 @@ View UI with colors if that isn't too hard.  Either or would be good to step int
 //          5c - Supervisor UI - I've added a button to the Team's View, make it a Toggle/Switch
 //          5d - Check on the Alerts again to see if there is a better way to clean up notificaiton registers, atm I'm using a randomNumber for the ID to avoid conflicts
 //             - (COMPLETED)
-//          5e - Agent UI - Do we clean up the state of the agent assistance button on the Supervisor begins to assist on the call?
+//          5e - Agent UI - Clean up the state of the agent assistance button on the Supervisor begins to assist on the call
 //                a - Agent UI - Look to alert Agent that X Supervisor is monitoring the call or maybe we just devert to the Barge/Coach plugin?
 //       6 - Clean Up Steps
 //          6a - Clean up if Agent Hands up the Call
 //             - (COMPLETED)
 //          6b - Clean up if Agent refreshes the browser
 //             - (COMPLETED)
-//          6c - What if the Supervisor Refreshes?  (Shouldn't matter but test for it)
+//          6c - What if the Supervisor Refreshes? - Specific to Agent Alert Toggle
+//             - (COMPLETED)
+//          6d - Found with two browsers - if the agent alerts, cancels, alerts again before the supervisor monitors (can deletes the registration)
+//               it errors on the supervisors screen as the notification is already registered
+//             - (COMPLETED)
+//       7 - Update README and Add Demo
 
 
 export default class AgentAssistancePlugin extends FlexPlugin {
@@ -111,11 +116,7 @@ export default class AgentAssistancePlugin extends FlexPlugin {
       //TODO: TESTING ONLY - REMOVE when done
       console.error('Within the cached mode for Agent Clean up');
       const agentWorkerSID = manager.store.getState().flex?.worker?.worker?.sid;
-      const agentFN = manager.store.getState().flex?.worker?.attributes?.full_name;
       let agentArray = [];
-
-      // Delete the alert if the agent toggles the Agent Assistance Mode off manually
-      Notifications.registeredNotifications.delete(agentFN);
 
       SyncDoc.getSyncDoc('Agent-Assistance')
       .then(doc => {

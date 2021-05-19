@@ -9,7 +9,10 @@ const manager = Manager.getInstance();
 // We want to clean up the agentArray so no other supervisors
 Actions.addListener('afterMonitorCall', (payload) => {
     let agentArray = [];
+
+    // Snagging the Agent's SID from stickyWorker
     const agentWorkerSID = manager.store.getState().flex?.supervisor?.stickyWorker?.worker?.sid;
+
     SyncDoc.getSyncDoc('Agent-Assistance')
       .then(doc => {
         // Confirm the Sync Doc Assistance array isn't null, as of ES6 we can use the spread syntax to clone the array
@@ -41,10 +44,6 @@ manager.workerClient.on("reservationCreated", reservation => {
             }));
             let agentArray = [];
             const agentWorkerSID = manager.store.getState().flex?.worker?.worker?.sid;
-            const agentFN = manager.store.getState().flex?.worker?.attributes?.full_name;
-
-            // Delete the alert if the agent toggles the Agent Assistance Mode off manually
-            Notifications.registeredNotifications.delete(agentFN);
 
             SyncDoc.getSyncDoc('Agent-Assistance')
               .then(doc => {
