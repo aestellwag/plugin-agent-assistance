@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton, TaskHelper, withTheme } from '@twilio/flex-ui';
+import { IconButton, TaskHelper, withTheme, Notifications } from '@twilio/flex-ui';
 import styled from 'react-emotion';
 
 // Used for Sync Docs
@@ -51,14 +51,13 @@ class AgentAssistanceButton extends React.Component {
         if (doc.value.data.assistance != null) {
           agentArray = [...doc.value.data.assistance];
         }
-        console.log(`Agent Array Spread: ${agentArray}`);
         // Checking Updated Status we pass during the agentAssistanceClick
         // to push/add the Agent to the Agent Array within the Sync Doc
         // adding their Full Name and Conference - the Supervisor will leverage these values
         if(updateStatus === 'add') {
           console.log(`Updating Sync Doc: Agent-Assistance, agent: ${agentWorkerSID} has been ADDED to the assistance array`);
           agentArray.push(
-            { 
+            {
               "agent_SID": agentWorkerSID,
               "agent_FullName": agentFN,
               "conference": conferenceSID
@@ -100,6 +99,13 @@ class AgentAssistanceButton extends React.Component {
         agentAssistance: false
       });
 
+      // See AgentAssistancePlugin.js for the getItem reference to the cache value if statement
+      console.log('Storing agentAssistance to cache');
+      localStorage.setItem('cacheAgentAssistState',false);
+
+      // Delete the alert if the agent toggles the Agent Assistance Mode off manually
+      Notifications.registeredNotifications.delete(agentFN);
+
       // Updating the Sync Doc to remove the agent from the assistance array
       this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'remove');
 
@@ -107,6 +113,12 @@ class AgentAssistanceButton extends React.Component {
       this.props.setAgentAssistanceStatus({ 
         agentAssistance: true
       });
+
+      // Caching this if the browser is refreshed while the agent actively had agent assistance up
+      // We will use this to clear up the Sync Doc and the Agent Alert
+      // See AgentAssistancePlugin.js for the getItem reference to the cache value if statement
+      console.log('Storing agentAssistance to cache');
+      localStorage.setItem('cacheAgentAssistState',true);
 
       // Updating the Sync Doc to add the agent from the assistance array
       this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'add');
@@ -145,15 +157,6 @@ const mapStateToProps = (state) => {
   // to manipulate the agent assistance button
   const customReduxStore = state?.['agent-assistance'].agentassistance;
   const agentAssistance = customReduxStore.agentAssistance;
-
-  const teamViewPath = state?.flex?.router?.location?.pathname;
-
-  // Storing teamViewPath to browser cache to help if a refresh happens
-  // will use this in the main plugin file to invoke an action to reset the monitor panel
-  if (teamViewPath != null) {
-    console.log('Storing teamViewPath to cache');
-    localStorage.setItem('teamViewPath',teamViewPath);
-  }
 
   return {
     myWorkerSID,

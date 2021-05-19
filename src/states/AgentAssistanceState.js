@@ -2,7 +2,9 @@ const ACTION_SET_AGENT_ASSISTANCE_STATUS = 'SET_AGENT_ASSISTANCE_STATUS';
 // Set the initial state of the below that we will use to change the buttons
 const initialState = {
     agentAssistance: false,
-    supervisorName: ""
+    enableAgentAssistanceAlerts: true,
+    supervisorSubscribed: false,
+    agentAssistanceArray: []
 };
 
 export class Actions {
