@@ -2,7 +2,7 @@
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
 
-# Recommended Plugin To Pair Alongside This Plugin
+# Recommended Plugin Pairing
 
 This plugin pairs extremely well with the Supervisor Barge/Coach Plugin (which gives the Supervisor the ability to barge into the call or coach the agent):  
 https://github.com/twilio-professional-services/plugin-supervisor-barge-coach
