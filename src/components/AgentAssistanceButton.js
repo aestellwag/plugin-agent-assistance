@@ -12,8 +12,13 @@ import { Actions as AgentAssistanceStatusAction, } from '../states/AgentAssistan
 
 const ButtonContainer = styled('div')`
   display: flex;
-  justify-content: center;
+  margin-top: 6px;
   margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-items: center;
+  text-align: center;
 `;
 
 const buttonStyleActive = {
@@ -39,8 +44,8 @@ class AgentAssistanceButton extends React.Component {
 
   // Initial sync doc listener, will use this when calling the agentAssistanceClick
   // Pull values from props as we need to confirm we are updating the agent's sync doc
-  // and adding the conference, supervisor, and coaching status
-  initSyncDoc(agentWorkerSID, agentFN, conferenceSID, updateStatus) {
+  // and adding the taskSID, conference, supervisor, and coaching status
+  initSyncDoc(agentWorkerSID, agentFN, taskSID, conferenceSID, updateStatus) {
 
     // Getting the latest Sync Doc agent list and storing in an array
     // We will use this to add/remove the approprate agents and then update the Sync Doc
@@ -60,12 +65,20 @@ class AgentAssistanceButton extends React.Component {
             {
               "agent_SID": agentWorkerSID,
               "agent_FullName": agentFN,
+              "taskSID": taskSID,
               "conference": conferenceSID
             }
           );
           // Update the Sync Doc with the new agentArray
           SyncDoc.updateSyncDoc('Agent-Assistance', agentArray);
-    
+
+          // We are updating the task to red when the agent is asking for assistance
+          Twilio.Flex.DefaultTaskChannels.Call.colors.main = (task) => {
+            if (task.sid == taskSID) {
+                return "red";
+            }
+            return "#1976d2";
+          };
         // Checking Updated Status we pass during the agentAssistanceClick 
         // to splice/remove the Agent from the Agent Array within the Sync Doc
         } else if (updateStatus === 'remove') {
@@ -77,7 +90,14 @@ class AgentAssistanceButton extends React.Component {
             agentArray.splice(removeAgentIndex, 1);
           }
           // Update the Sync Doc with the new agentArray
-          SyncDoc.updateSyncDoc('Agent-Assistance', agentArray);
+          SyncDoc.updateSyncDoc('Agent-Assistance', agentArray);          
+          
+          // We are are resetting the task color as the alarm is off now
+          Twilio.Flex.DefaultTaskChannels.Call.colors.main = (task) => {
+            if (task.sid == taskSID) {
+              return "#1976d2";
+            }
+          };
         }
     });
   }
@@ -90,6 +110,7 @@ class AgentAssistanceButton extends React.Component {
     const { task } = this.props;
     const conference = task && task.conference;
     const conferenceSID = conference && conference.conferenceSid;
+    const selectedTaskSID = this.props.selectedTaskSID;
     const agentAssistance = this.props.agentAssistance;
     const myWorkerSID = this.props.myWorkerSID;
     const agentFN = this.props.agentFN;
@@ -104,7 +125,7 @@ class AgentAssistanceButton extends React.Component {
       localStorage.setItem('cacheAgentAssistState',false);
 
       // Updating the Sync Doc to remove the agent from the assistance array
-      this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'remove');
+      this.initSyncDoc(myWorkerSID, agentFN, selectedTaskSID, conferenceSID, 'remove');
 
     } else {
       this.props.setAgentAssistanceStatus({ 
@@ -118,7 +139,7 @@ class AgentAssistanceButton extends React.Component {
       localStorage.setItem('cacheAgentAssistState',true);
 
       // Updating the Sync Doc to add the agent from the assistance array
-      this.initSyncDoc(myWorkerSID, agentFN, conferenceSID, 'add');
+      this.initSyncDoc(myWorkerSID, agentFN, selectedTaskSID, conferenceSID, 'add');
     }
   }
 
@@ -140,6 +161,7 @@ class AgentAssistanceButton extends React.Component {
           title={ agentAssistance ? "Turn off Assistance" : "Ask for Assistance" }
           style={ agentAssistance ? buttonStyleActive : buttonStyle }
         />
+        { agentAssistance ? "Assistance Required" : "" }
       </ButtonContainer>
     );
   }
@@ -149,6 +171,7 @@ class AgentAssistanceButton extends React.Component {
 const mapStateToProps = (state) => {
   const myWorkerSID = state?.flex?.worker?.worker?.sid;
   const agentFN = state?.flex?.worker?.attributes?.full_name;
+  const selectedTaskSID = state?.flex?.view?.selectedTaskSid;
 
   // Also pulling back the states from the redux store as we will use those later
   // to manipulate the agent assistance button
@@ -158,7 +181,8 @@ const mapStateToProps = (state) => {
   return {
     myWorkerSID,
     agentAssistance,
-    agentFN
+    agentFN,
+    selectedTaskSID
   };
 };
 

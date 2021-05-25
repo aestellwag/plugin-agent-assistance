@@ -62,5 +62,12 @@ manager.workerClient.on("reservationCreated", reservation => {
                     SyncDoc.updateSyncDoc('Agent-Assistance', agentArray);
                 }
             });
+            // We are are resetting the task color as the alarm is off now
+            Twilio.Flex.DefaultTaskChannels.Call.colors.main = (task) => {
+                let selectedTaskSID = manager.store.getState().flex?.view?.selectedTaskSid;
+                if (task.sid == selectedTaskSID){
+                    return "#a0a8bd";
+                }
+            };
     });    
 });

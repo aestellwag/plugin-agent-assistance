@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlexPlugin } from 'flex-plugin';
-import { Manager, VERSION, Notifications, MainContainer } from '@twilio/flex-ui';
+import { Manager, VERSION } from '@twilio/flex-ui';
 import { Actions as AgentAssistanceStatusAction, } from './states/AgentAssistanceState';
 
 // Leverage for the Sync Documents used for Coach Alerts across user sessions
@@ -17,7 +17,7 @@ import './listeners/CustomListeners';
 // Agent Assistance Button for the Agent's view
 import AgentAssistanceButton from './components/AgentAssistanceButton';
 // Supervisor Alert and Teams View component based on Agent Assistance Status
-import SupervisorTeamsView from './components/SupervisorTeamsView';
+import SupervisorAlertButton from './components/SupervisorAlertButton';
 
 const PLUGIN_NAME = 'AgentAssistancePlugin';
 
@@ -38,11 +38,8 @@ function tokenUpdateHandler() {
 }
 
 /*
-FIXME: Great progress so far, I skipped ahead and did some UI clean up (clean up when monitor is hit, clean up when hang up is hit) list below is up to date.
-What we need to focus on next would be clean up on the Alert, how to check if a notification alert ID is already made and not re-register it.  Since we are tagging
-the Full Name in the alert.  Maybe pass it into a function?  Once we have that, we can look at testing multiple Agents in the Array and see how that works.  The clean up
-should be set, just need UI elements to take multiple objects in the array and how to cleanly handle that.  That could be tough so we can maybe look to changing the Team's
-View UI with colors if that isn't too hard.  Either or would be good to step into next
+FIXME: We have it working, now we need to get the agent's alert button to reset when the supervisor monitors the call, 
+       this should also clean up the task alert color change from the agent's perspective
 */
 
 //TODO:  What's next to build?
@@ -60,15 +57,16 @@ View UI with colors if that isn't too hard.  Either or would be good to step int
 //       3 - Update Sync Doc when Supervisor begins to Monitor (IE Turn off Agent Assistance)
 //         - (COMPLETED)
 //       4 - Add changes to Teams View Canvas based on WHO is actively asking for Agent Assistance (IE highlight red?)
+//         - (COMPLETED)
 //       5 - UI Extras & Others
 //          5a - Supervisor UI - Look to add a role based filter to prevent all users from be able to subscrib (this will be useful when we get to alerts)
 //             - (COMPLETED)
 //          5b - Supervisor UI - See if you can have when clicking the alert that it brings you into the Teams View Tab
-//          5c - Supervisor UI - I've added a button to the Team's View, make it a Toggle/Switch
+//             - (COMPLETED)
+//FIXME:    5c - Supervisor UI - Update Agent Alert Button to a Toggle/Switch?
 //          5d - Check on the Alerts again to see if there is a better way to clean up notificaiton registers, atm I'm using a randomNumber for the ID to avoid conflicts
 //             - (COMPLETED)
-//          5e - Agent UI - Clean up the state of the agent assistance button on the Supervisor begins to assist on the call
-//                a - Agent UI - Look to alert Agent that X Supervisor is monitoring the call or maybe we just devert to the Barge/Coach plugin?
+//FIXME:    5e - UI/State - Test an Array/Multiple Agents Alerting at the same time and clean up
 //       6 - Clean Up Steps
 //          6a - Clean up if Agent Hands up the Call
 //             - (COMPLETED)
@@ -79,8 +77,7 @@ View UI with colors if that isn't too hard.  Either or would be good to step int
 //          6d - Found with two browsers - if the agent alerts, cancels, alerts again before the supervisor monitors (can deletes the registration)
 //               it errors on the supervisors screen as the notification is already registered
 //             - (COMPLETED)
-//       7 - Update README and Add Demo
-
+//FIXME:  7 - Update README and Add Demo
 
 export default class AgentAssistancePlugin extends FlexPlugin {
   constructor() {
@@ -104,8 +101,6 @@ export default class AgentAssistancePlugin extends FlexPlugin {
       manager.store.dispatch(AgentAssistanceStatusAction.setAgentAssistanceStatus({ 
         enableAgentAssistanceAlerts: false
       }));
-      // Disable Notifications
-      MainContainer.defaultProps.showNotificationBar = false;
     }
 
     //TODO: Look to move this into a function within the Sync.js file?
@@ -113,8 +108,6 @@ export default class AgentAssistancePlugin extends FlexPlugin {
     // This will clear up the Sync Doc and delete the registered notification
     let cacheAgentAssistState = localStorage.getItem('cacheAgentAssistState');
     if (cacheAgentAssistState === "true") {
-      //TODO: TESTING ONLY - REMOVE when done
-      console.error('Within the cached mode for Agent Clean up');
       const agentWorkerSID = manager.store.getState().flex?.worker?.worker?.sid;
       let agentArray = [];
 
@@ -141,16 +134,17 @@ export default class AgentAssistancePlugin extends FlexPlugin {
     flex.CallCanvas.Content.add(
       <AgentAssistanceButton key="agent-assistance-button" />
     );
-    
+
     // Pull back the user roles disable this component if it exists
     const myWorkerRoles = manager.store.getState().flex?.worker?.worker?.attributes?.roles;
     // Update the role names if you wish to inlude this feature for more role types
     if(myWorkerRoles.includes('admin' || 'supervisor')) {
       console.log('Access Granted to the Supervisor Agent Assistance Alerts Feature');
-      // Add the Agent Assistance Alerts and Toggle Button for the Supervisors
+      // Add the Supervisor Alert Toggle Button for the Supervisors
       flex.MainHeader.Content.add(
-        <SupervisorTeamsView key="agent-assistance-button" />
-      );
+        <SupervisorAlertButton key="agent-assistance-button" />, {
+          align: 'start'
+      });
     }
 
     // TODO: REMOVE - TESTING ONLY - Here to clear the Sync Doc

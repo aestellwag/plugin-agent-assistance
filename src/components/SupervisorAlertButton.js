@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton, withTheme, Notifications, NotificationType, MainContainer } from '@twilio/flex-ui';
+import { IconButton, withTheme, Notifications, NotificationType, Actions } from '@twilio/flex-ui';
 import styled from 'react-emotion';
 import Switch from '@material-ui/core/Switch';
 
@@ -12,13 +12,18 @@ import { bindActionCreators } from 'redux';
 import { Actions as AgentAssistanceStatusAction, } from '../states/AgentAssistanceState';
 
 const ButtonContainer = styled('div')`
-  margin-bottom: 6px;
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-items: center;
+  text-align: center;
 `;
 
 const buttonStyleActive = {
   'marginLeft': '6px',
   'marginRight': '6px',
-  'color': 'limegreen',
+  'color': 'forestgreen',
 }
 
 const buttonStyle = {
@@ -26,7 +31,7 @@ const buttonStyle = {
   'marginRight': '6px'
 }
 
-class SupervisorTeamsView extends React.Component {
+class SupervisorAlertButton extends React.Component {
   // getting props
   constructor(props) {
     super(props);
@@ -35,23 +40,61 @@ class SupervisorTeamsView extends React.Component {
   // Whenever we get a Sync Doc update after subscribing, let's update the redux store/state
   // with the new agent array
   updateStateAndSync(updatedSyncDoc) {
+    const enableAgentAssistanceAlerts = this.props.enableAgentAssistanceAlerts;
     this.props.setAgentAssistanceStatus({ 
       agentAssistanceArray: updatedSyncDoc.data.assistance
     });
-    // Call the alert check function to alert for any new agents needing assistance
-    this.alertSupervisorsCheck(updatedSyncDoc);
+    // Confirm Alerts are enabled
+    if(enableAgentAssistanceAlerts) {
+      // Call the alert check function to alert for any new agents needing assistance
+      this.alertSupervisorsCheck(updatedSyncDoc);
+    }
+    //TODO: this should be a loop, for testing just doing a simple find index
+    let arrayIndexCheck = updatedSyncDoc.data.assistance.findIndex((agent) => agent.agent_FullName != "");
+    // We are updating the task color based on if the agent's task sid exists and doing clean up
+    if (arrayIndexCheck > -1) {
+      // Pulling the agent's taskSID
+      let agentTaskSID = `${updatedSyncDoc.data.assistance[arrayIndexCheck].taskSID}`;
+      Twilio.Flex.DefaultTaskChannels.Call.colors.main = (task) => {
+        if (task.sid == agentTaskSID) {
+          return "red";
+        } else if (task.status == "assigned") {
+          return "#1976d2";
+        } else if (task.status == "wrapping") {
+          return "#a0a8bd";
+        } else {
+          return "#1976d2";
+        }
+      };
+    } else {
+      Twilio.Flex.DefaultTaskChannels.Call.colors.main = (task) => {
+        if (task.status == "assigned") {
+          return "#1976d2";
+        } else if (task.status == "wrapping") {
+          return "#a0a8bd";
+        } else {
+          return "#1976d2";
+        }
+      };
+    }
+  } 
+
+  // Used to navigate to the Teams View if the Supervisor clicks the Agent Assistance Alert
+  navigateToTeamsView() {
+    Actions.invokeAction("NavigateToView", {viewName: "teams"});
   }
 
   // When this is called, we will do checks to validate any new agents that need assistance
   alertSupervisorsCheck() {
     let agentAssistanceArray = this.props.agentAssistanceArray;
+    //TODO: this should be a loop, for testing just doing a simple find index
     let arrayIndexCheck = agentAssistanceArray.findIndex((agent) => agent.agent_FullName != "");
 
     //TODO: FOR TESTING - Remove the below console.error when done
     console.error(`Array Index Check = ${arrayIndexCheck}`);
     console.error(`agentAssistanceArray = ${agentAssistanceArray}`);
 
-    if(arrayIndexCheck > -1) {
+    if (arrayIndexCheck > -1) {
 
        //TODO: FOR TESTING - Remove the below console.error when done
       console.error(`agentAssistanceArray.agent_FullName = ${agentAssistanceArray[arrayIndexCheck].agent_FullName}`);
@@ -61,7 +104,7 @@ class SupervisorTeamsView extends React.Component {
 
       //TODO: FOR TESTING - Remove the below console.error when done
       console.error(`AlertID = ${agentFN}`);
-      let alert = `${agentFN} is seeking assistance.  Navigate to the Teams View to help!`;
+      let alert = `${agentFN} is seeking assistance.`;
 
       // Registering the notification with the ID being the Agent's full name and alert string as content
       Notifications.registerNotification({
@@ -69,26 +112,26 @@ class SupervisorTeamsView extends React.Component {
         closeButton: true,
         content: alert,
         type: NotificationType.warning,
-        timeout: 8000
+        timeout: 8000,
+        actions: [
+          <button type="button" onClick={(event, notification) => {this.navigateToTeamsView()}}>Navigate to Team's View</button>
+        ]
       });
       // Fire off the Notification we just registered
       Notifications.showNotification(agentFN);
-      // Delete the alert as we just want it temp
+      // Delete the alert, the alert will still show in the UI but this gives the ability
+      // if the agent happens to toggle assistance off/on again, that a new alert will pop up
       Notifications.registeredNotifications.delete(agentFN);
     }
   }
 
   agentAssistanceToggle = () => {
     const enableAgentAssistanceAlerts = this.props.enableAgentAssistanceAlerts;
-    const agentFN = this.props.agentFN;
 
     if (enableAgentAssistanceAlerts) {
       this.props.setAgentAssistanceStatus({ 
         enableAgentAssistanceAlerts: false
       });
-      // Disable Notifications
-      console.warn(`Refresh of the browser is required for Agent Alert Notification Toggles`);
-      MainContainer.defaultProps.showNotificationBar = false;
       // If the supervisor disabled the agent assistance alerts, let's cache this
       // to ensure it is set to false if a browser refresh happens
       // See AgentAssistancePlugin.js for the getItem reference to the cache value if statement
@@ -98,9 +141,6 @@ class SupervisorTeamsView extends React.Component {
       this.props.setAgentAssistanceStatus({ 
         enableAgentAssistanceAlerts: true
       });
-      // Enable Notifications
-      console.warn(`Refresh of the browser is required for Agent Alert Notification Toggles`);
-      MainContainer.defaultProps.showNotificationBar = true;
       // See AgentAssistancePlugin.js for the getItem reference to the cache value if statement
       console.log('Storing enableAgentAssistanceAlerts to cache');
       localStorage.setItem('cacheAlerts',true);
@@ -130,6 +170,7 @@ class SupervisorTeamsView extends React.Component {
           this.updateStateAndSync(updatedDoc.value);
         })
       })
+      // Setting supervisorSubscribed to true so we don't attempt more sync update/subscribes
       this.props.setAgentAssistanceStatus({ 
         supervisorSubscribed: true
       });
@@ -137,12 +178,13 @@ class SupervisorTeamsView extends React.Component {
     return (
       <ButtonContainer>
         <IconButton
-          icon={ enableAgentAssistanceAlerts ? 'BulbBold' : 'Bulb' }
+          icon={ enableAgentAssistanceAlerts ? 'BellBold' : 'Bell' }
           onClick={this.agentAssistanceToggle}
           themeOverride={this.props.theme.CallCanvas.Button}
           title={ enableAgentAssistanceAlerts ? "Disable Agent Assistance Alerts" : "Enable Agent Assistance Alerts" }
           style={ enableAgentAssistanceAlerts ? buttonStyleActive : buttonStyle }
         />
+        { enableAgentAssistanceAlerts ? "Agent Assistance Alerts Enabled" : "Agent Assistance Alerts Disabled" }
       </ButtonContainer>
     );
   }
@@ -170,4 +212,4 @@ const mapDispatchToProps = (dispatch) => ({
   setAgentAssistanceStatus: bindActionCreators(AgentAssistanceStatusAction.setAgentAssistanceStatus, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(SupervisorTeamsView));
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(SupervisorAlertButton));
