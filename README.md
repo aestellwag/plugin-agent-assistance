@@ -2,13 +2,19 @@
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
 
+# Recommended Plugin To Pair Alongside This Plugin
+
+This plugin pairs extremely well with the Supervisor Barge/Coach Plugin (which gives the Supervisor the ability to barge into the call or coach the agent):  
+https://github.com/twilio-professional-services/plugin-supervisor-barge-coach
+
+
 # Twilio Flex Plugin - Agent Assistance
 
 Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
 
 This plugin adds the ability for the agent to ask for assistance from a supervisor.  While on a task the agent can click the "Agent Assistance" button to alert supervisors that they need assistance.  From the Supervisor perspecitve, they will receive an alert that gives them the ability to navigate to the Team's View tab.  From the team's view tab, the Task Card will show as Red for any agent that requires assistance.  Upon monitoring a call or if the agent clicks to turn off assistance, the will clear the Task Card back to normal.
 
-This plugin pairs extremely well with the Supervisor Barge/Coach Plugin (which gives the Supervisor the ability to barge into the call or coach the agent):
+This plugin pairs extremely well with the Supervisor Barge/Coach Plugin (which gives the Supervisor the ability to barge into the call or coach the agent):  
 https://github.com/twilio-professional-services/plugin-supervisor-barge-coach
 
 This is the agent assistance button available to the agent while on a task:
