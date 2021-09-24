@@ -63,10 +63,9 @@ FIXME: We have it working, now we need to get the agent's alert button to reset 
 //             - (COMPLETED)
 //          5b - Supervisor UI - See if you can have when clicking the alert that it brings you into the Teams View Tab
 //             - (COMPLETED)
-//FIXME:    5c - Supervisor UI - Update Agent Alert Button to a Toggle/Switch?
-//          5d - Check on the Alerts again to see if there is a better way to clean up notificaiton registers, atm I'm using a randomNumber for the ID to avoid conflicts
+//          5c - Check on the Alerts again to see if there is a better way to clean up notificaiton registers, atm I'm using a randomNumber for the ID to avoid conflicts
 //             - (COMPLETED)
-//FIXME:    5e - UI/State - Test an Array/Multiple Agents Alerting at the same time and clean up
+//FIXME:    5d - UI/State - Test an Array/Multiple Agents Alerting at the same time and clean up
 //       6 - Clean Up Steps
 //          6a - Clean up if Agent Hands up the Call
 //             - (COMPLETED)
@@ -78,6 +77,12 @@ FIXME: We have it working, now we need to get the agent's alert button to reset 
 //               it errors on the supervisors screen as the notification is already registered
 //             - (COMPLETED)
 //FIXME:  7 - Update README and Add Demo
+
+//FIXME: Enhancements from a customer:
+//        1 - Add the ability when the agent clicks the agent assistance button that they can add context (maybe a dropdown or free text)
+//        2 - For Navient the ability to report on when the agent clicks the agent assistance button (so they can report on this)
+//          2a - For Navient, if there was a drop down (similar to dispositions) the ability to report on what they selected
+
 
 export default class AgentAssistancePlugin extends FlexPlugin {
   constructor() {

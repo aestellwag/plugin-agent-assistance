@@ -33,6 +33,10 @@ const buttonStyle = {
 
 class SupervisorAlertButton extends React.Component {
   // getting props
+
+  // Use to validate if we have subscribed to sync updates or not
+  #syncSubscribed = false;
+
   constructor(props) {
     super(props);
   }
@@ -147,34 +151,46 @@ class SupervisorAlertButton extends React.Component {
     }
   }
 
+  syncUpdates() {
+
+    if (this.#syncSubscribed != true) {
+      this.#syncSubscribed = true;
+
+      const enableAgentAssistanceAlerts = this.props.enableAgentAssistanceAlerts;
+      const supervisorSubscribed = this.props.supervisorSubscribed;
+      
+      if(enableAgentAssistanceAlerts && !supervisorSubscribed) {
+        SyncDoc.getSyncDoc('Agent-Assistance')
+        .then(doc => {
+          console.log(doc.value);
+
+          // Update the redux store/state with the latest array of agents needing assistance
+          this.updateStateAndSync(doc.value);
+
+          // We are subscribing to Sync Doc updates here and logging anytime that happens
+          doc.on("updated", updatedDoc => {
+            console.log("Sync Doc Update Recieved: ", updatedDoc.value);
+
+            // Every time we get an update on the Sync Doc, update the redux store/state
+            // with the latest array of agents needing assistance
+            this.updateStateAndSync(updatedDoc.value);
+          })
+        })
+        // Setting supervisorSubscribed to true so we don't attempt more sync update/subscribes
+        this.props.setAgentAssistanceStatus({ 
+          supervisorSubscribed: true
+        });
+      }
+    }  
+  }
+
   // Render the Supervisor Agent Assistance Toggle, this gives the supervisor
   // the option to enable or disable Agent Assistance Alerts
   render() {
+    
     const enableAgentAssistanceAlerts = this.props.enableAgentAssistanceAlerts;
     const supervisorSubscribed = this.props.supervisorSubscribed;
-    
-    if(enableAgentAssistanceAlerts && !supervisorSubscribed) {
-      SyncDoc.getSyncDoc('Agent-Assistance')
-      .then(doc => {
-        console.log(doc.value);
 
-        // Update the redux store/state with the latest array of agents needing assistance
-        this.updateStateAndSync(doc.value);
-
-        // We are subscribing to Sync Doc updates here and logging anytime that happens
-        doc.on("updated", updatedDoc => {
-          console.log("Sync Doc Update Recieved: ", updatedDoc.value);
-
-          // Every time we get an update on the Sync Doc, update the redux store/state
-          // with the latest array of agents needing assistance
-          this.updateStateAndSync(updatedDoc.value);
-        })
-      })
-      // Setting supervisorSubscribed to true so we don't attempt more sync update/subscribes
-      this.props.setAgentAssistanceStatus({ 
-        supervisorSubscribed: true
-      });
-    }
     return (
       <ButtonContainer>
         <IconButton

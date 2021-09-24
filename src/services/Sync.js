@@ -50,13 +50,13 @@ class SyncDocClass {
 			})
 	}
 
-	// This will be called when we are tearing down the call to delete the Sync Doc
-	deleteSyncDoc(syncDocName) {
+	// Called when we wish to close/unsubscribe from a specific sync document
+	closeSyncDoc(syncDocName) {	
 		SYNC_CLIENT
-			.document(syncDocName)
-			.then(doc => {
-				doc.remove()
-			});
+		.document(syncDocName)
+		.then(doc => {
+			doc.close();
+		})
 	}
 }
 
