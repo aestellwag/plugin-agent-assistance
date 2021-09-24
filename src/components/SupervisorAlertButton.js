@@ -189,7 +189,8 @@ class SupervisorAlertButton extends React.Component {
   render() {
     
     const enableAgentAssistanceAlerts = this.props.enableAgentAssistanceAlerts;
-    const supervisorSubscribed = this.props.supervisorSubscribed;
+    
+    this.syncUpdates();
 
     return (
       <ButtonContainer>
