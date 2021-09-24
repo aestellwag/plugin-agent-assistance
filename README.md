@@ -17,16 +17,16 @@ This plugin adds the ability for the agent to ask for assistance from a supervis
 This plugin pairs extremely well with the Supervisor Barge/Coach Plugin (which gives the Supervisor the ability to barge into the call or coach the agent):  
 https://github.com/twilio-professional-services/plugin-supervisor-barge-coach
 
-This is the agent assistance button available to the agent while on a task:
+This is the agent assistance button available to the agent while on a task:  
 ![Plugin Demo](https://github.com/aestellwag/plugin-agent-assistance/blob/main/Agent-Assistance-Demo-2.gif)
 
-Once the agent as clicked the Agent Assistance button, this Alert will broadcast to each supervisor
+Once the agent as clicked the Agent Assistance button, this Alert will broadcast to each supervisor  
 ![Plugin Demo](https://github.com/aestellwag/plugin-agent-assistance/blob/main/Agent-Assistance-Demo-3.gif)
 
-Once the Supervisor navigates to the Team's View tab, they will see which agents are need assistance
+Once the Supervisor navigates to the Team's View tab, they will see which agents are need assistance  
 ![Plugin Demo](TBD)
 
-This button is available to Supervisors to mute the Agent Assistance Alert's if they wish
+This button is available to Supervisors to mute the Agent Assistance Alert's if they wish  
 ![Plugin Demo](https://github.com/aestellwag/plugin-agent-assistance/blob/main/Agent-Assistance-Demo-1.gif)
 
 ## Pre-req
@@ -90,6 +90,12 @@ You are all set to test the Agent Assitance feature on your Flex instance!
 ---
 
 ## Changelog
+
+### 1.0.1
+
+**September 24, 2021**
+
+- Improved how the Render works within the Supervisor Alert Component.  Previous design was causing those components to re-subscribe to sync docs.
 
 ### 1.0.0
 
