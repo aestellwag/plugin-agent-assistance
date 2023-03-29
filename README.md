@@ -6,6 +6,9 @@
 This plugin is no longer maintained.  Agent Assistance has been migrated to
 [Twilio Professional Services - Flex Project Template](https://github.com/twilio-professional-services/twilio-proserv-flex-project-template).  Instead of the Supervisor Barge Coach and Agent Assistance Plugins being seperate, I've combined those into one Supervisor "Suite" within the Flex Project Template.  This feature is now supported for 2.x Flex.  I hope you enjoy the enhancements!
 
+For reference to the specific Supervisor Barge Coach feature, you can find that here:
+https://github.com/twilio-professional-services/flex-project-template/tree/main/plugin-flex-ts-template-v2/src/feature-library/supervisor-barge-coach
+
 # Twilio Flex Plugin - Agent Assistance
 
 Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
