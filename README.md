@@ -3,7 +3,7 @@
 </a>
 
 # Notice - Legacy Code
-This plugin is no longer maintained.  Agent Assistance has been migrated to the
+This plugin is no longer maintained.  Agent Assistance has been migrated to
 [Twilio Professional Services - Flex Project Template](https://github.com/twilio-professional-services/twilio-proserv-flex-project-template).  Instead of the Supervisor Barge Coach and Agent Assistance Plugins being seperate, I've combined those into one Supervisor "Suite" within the Flex Project Template.  This feature is now supported for 2.x Flex.  I hope you enjoy the enhancements!
 
 # Twilio Flex Plugin - Agent Assistance
