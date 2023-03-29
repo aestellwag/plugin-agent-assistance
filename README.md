@@ -2,11 +2,9 @@
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
 
-# Recommended Plugin Pairing
-
-This plugin pairs extremely well with the Supervisor Barge/Coach Plugin (which gives the Supervisor the ability to barge into the call or coach the agent):  
-https://github.com/twilio-professional-services/plugin-supervisor-barge-coach
-
+# Notice - Legacy Code
+This plugin is no longer maintained.  Agent Assistance has been migrated to the
+[Twilio Professional Services - Flex Project Template](https://github.com/twilio-professional-services/twilio-proserv-flex-project-template).  Instead of the Supervisor Barge Coach and Agent Assistance Plugins being seperate, I've combined those into one Supervisor "Suite" within the Flex Project Template.  This feature is now supported for 2.x Flex.  I hope you enjoy the enhancements!
 
 # Twilio Flex Plugin - Agent Assistance
 
